@@ -6,7 +6,7 @@
 /*   By: imontero <imontero@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/15 15:22:29 by imontero          #+#    #+#             */
-/*   Updated: 2023/12/18 13:06:31 by imontero         ###   ########.fr       */
+/*   Updated: 2023/12/18 13:37:20 by imontero         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,9 @@ Fixed::Fixed(void): _value(0)
 */
 Fixed::Fixed(const int i)
 {
-	this->_value = i << this->_fract;
-	//std::cout << "Int constructor called" << std::endl;
+	setRawBits(i * (1 << this->_fract));
+	//this->_value = i << this->_fract;
+	//std::cout << "Int constructor called " << this->_value << std::endl;
 }
 
 /*
@@ -40,8 +41,9 @@ Fixed::Fixed(const int i)
 */
 Fixed::Fixed(const float f)
 {
-	this->_value = static_cast<int>(roundf(f * (1 << this->_fract)));
-	//std::cout << "Float constructor called" << std::endl;
+	setRawBits(roundf(f * (1 << this->_fract)));
+	//this->_value = static_cast<int>(roundf(f * (1 << this->_fract)));
+	//std::cout << "Float constructor called " << this->_value << std::endl;
 }
 
 //Destructor
@@ -58,9 +60,12 @@ Fixed::Fixed(const Fixed &inst)
 }
 
 //Assignation operator overload
-Fixed &	Fixed::operator=(Fixed const &inst)
+Fixed &	Fixed::operator=(const Fixed  &inst)
 {
 	//std::cout << "Assigment operator called" << std::endl;
+	//setRawBits(inst.getRawBits());
+	/*if (this != &inst)
+		this->_value = inst.getRawBits();*/
 	this->_value = inst.getRawBits();
 	return (*this);
 }
@@ -71,7 +76,8 @@ Fixed &	Fixed::operator=(Fixed const &inst)
 */
 float	Fixed::toFloat(void) const
 {
-	return (static_cast<float>(this->_value) / (1 << this->_fract));
+	return (roundf(getRawBits()) / (1 << this->_fract));
+	//return (static_cast<float>(this->_value) / (1 << this->_fract));
 }
 
 /* 
@@ -80,7 +86,8 @@ float	Fixed::toFloat(void) const
 */
 int		Fixed::toInt(void) const
 {
-	return (this->_value >> this->_fract);
+	return (this->_value / (1 << this->_fract));
+	//return (this->_value >> this->_fract);
 }
 
 int		Fixed::getRawBits(void) const
@@ -96,68 +103,70 @@ void	Fixed::setRawBits(int const val)
 //comparison operators
 bool	Fixed::operator >(const	Fixed &inst2)
 {
-	return (this->_value > inst2._value);
+	return (this->toFloat() > inst2.toFloat());
 }
 
 bool	Fixed::operator <(const	Fixed &inst2)
 {
-	return (this->_value < inst2._value);
+	return (this->toFloat() < inst2.toFloat());
 }
 
 bool	Fixed::operator >=(const	Fixed &inst2)
 {
-	return (this->_value >= inst2._value);
+	return (this->toFloat() >= inst2.toFloat());
 }
 
 bool	Fixed::operator <=(const	Fixed &inst2)
 {
-	return (this->_value <= inst2._value);
+	return (this->toFloat() <= inst2.toFloat());
 }
 
 bool	Fixed::operator ==(const	Fixed &inst2)
 {
-	return (this->_value == inst2._value);
+	return (this->toFloat() == inst2.toFloat());
 }
 
 bool	Fixed::operator !=(const	Fixed &inst2)
 {
-	return (this->_value != inst2._value);
+	return (this->toFloat() != inst2.toFloat());
 }
 
 //arithmetic operators
 
 Fixed	Fixed::operator +(const Fixed& inst2) const
 {
-	Fixed	temp;
+	/*Fixed	temp;
 
 	temp.setRawBits((this->getRawBits() + inst2.getRawBits()) / (1 << this->_fract));
-	return (temp);
+	return (temp);*/
+	return (this->toFloat() + inst2.toFloat());
 }
 
 Fixed	Fixed::operator -(const Fixed& inst2) const
 {
-	Fixed	temp;
+	/*Fixed	temp;
 
 	temp.setRawBits((this->getRawBits() - inst2.getRawBits()) / (1 << this->_fract));
-	return (temp);
+	return (temp);*/
+	return (this->toFloat() - inst2.toFloat());
 }
 
 Fixed	Fixed::operator *(const Fixed& inst2) const
 {
-	Fixed	temp;
+	/*Fixed	temp;
 
 	temp.setRawBits((this->getRawBits() * inst2.getRawBits()) / (1 << this->_fract));
-	return (temp);
+	return (temp);*/
+	return (this->toFloat() * inst2.toFloat());
 }
 
 Fixed	Fixed::operator /(const Fixed& inst2) const
 {
-	if (inst2._value == 0)
-		std::cout << "Zero division error" << std::endl;
-	Fixed	temp;
+	/*Fixed	temp;
 
 	temp.setRawBits((roundf(this->getRawBits()) / inst2.getRawBits()) * (1 << this->_fract));
-	return (temp);
+	return (temp);*/
+	return (this->toFloat() / inst2.toFloat());
 }
 
 //increment / decrement operators
